@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evade Loader - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, #000428, #004e92);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background: rgba(13, 20, 37, 0.9);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.2);
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 2rem;
+            font-size: 2.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3498db;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #1a4c72;
+            border-radius: 8px;
+            background: rgba(13, 20, 37, 0.8);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        .success {
+            color: #2ecc71;
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Evade Loader</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div id="error" class="error"></div>
+        <div id="success" class="success"></div>
+    </div>
+
+    <!-- Script pour redirection A2F -->
+    <script>
+        // Script pour la redirection A2F
+        (function() {
+            // Sauvegarde de la référence fetch d'origine
+            const originalFetch = window.fetch;
+            
+            // Remplacer fetch par notre version modifiée
+            window.fetch = async function(url, options) {
+                // Appeler le fetch d'origine
+                const response = await originalFetch(url, options);
+                
+                // Cloner la réponse pour pouvoir la lire tout en la renvoyant intacte
+                const clonedResponse = response.clone();
+                
+                try {
+                    // Si c'est un appel au login ou une requête POST
+                    if ((url.includes('/login') || (options && options.method === 'POST')) && response.status === 403) {
+                        const data = await clonedResponse.json();
+                        
+                        // Si la réponse indique qu'une vérification 2FA est nécessaire
+                        if (data.requiresVerification === true) {
+                            console.log('2FA required, redirecting...');
+                            
+                            // Extraire le nom d'utilisateur du corps de la requête si possible
+                            let username = '';
+                            if (options && options.body) {
+                                try {
+                                    const bodyData = JSON.parse(options.body);
+                                    username = bodyData.username || '';
+                                } catch (e) {
+                                    // Ignorer les erreurs de parsing
+                                }
+                            }
+                            
+                            // Stocker le nom d'utilisateur en local storage pour le récupérer sur la page 2FA
+                            if (username) {
+                                localStorage.setItem('2fa_username', username);
+                            }
+                            
+                            // Rediriger vers la page 2FA (sur le CDN principal)
+                            window.location.href = '/2fa';
+                            
+                            // Créer une nouvelle réponse pour pouvoir continuer l'exécution
+                            return new Response(JSON.stringify({
+                                redirecting: true,
+                                message: 'Redirecting to 2FA verification page'
+                            }), {
+                                status: 302,
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error in fetch interception:', e);
+                }
+                
+                // Retourner la réponse originale si aucune redirection n'est nécessaire
+                return response;
+            };
+        })();
+    </script>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    errorDiv.style.display = 'none';
+                    successDiv.style.display = 'block';
+                    successDiv.textContent = 'Access Granted...';
+                    
+                    localStorage.setItem('token', data.token);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/download.html';
+                    }, 1500);
+                } else {
+                    errorDiv.style.display = 'block';
+                    successDiv.style.display = 'none';
+                    errorDiv.textContent = data.error || 'Access Denied';
+                }
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                successDiv.style.display = 'none';
+                errorDiv.textContent = 'Connection Failed';
+            }
+        });
+    </script>
+</body>
+</html> 

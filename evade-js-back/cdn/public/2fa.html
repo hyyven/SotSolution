@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoT Solution - 2FA Verification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --background-color: #111;
+            --card-background: #222;
+            --text-color: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://XXXXXXXXXXXXXXXXXXXX/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+        
+        .verification-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary-color);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .code-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .code-input input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .status-message.error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.5);
+        }
+        
+        .status-message.success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.5);
+        }
+        
+        .icon-spin {
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .timer {
+            font-size: 14px;
+            color: #95a5a6;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .code-input {
+                gap: 5px;
+            }
+            
+            .code-input input {
+                width: 40px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <img src="https://XXXXXXXXXXXXXXXXXXX/logo.png" alt="SoT Solution Logo" class="logo">
+            <h1>Two-Factor Authentication</h1>
+            <p>A verification code has been sent to your Discord account. Please enter the 6-digit code below to complete your login.</p>
+            
+            <div class="status-message" id="statusMessage"></div>
+            
+            <div class="verification-form">
+                <div class="code-input" id="codeInputContainer">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="code-digit" autofocus>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="code-digit">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="code-digit">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="code-digit">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="code-digit">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="code-digit">
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                    <input type="text" id="usernameInput" placeholder="Username" required>
+                </div>
+                
+                <button id="verifyButton">
+                    <span id="buttonText">Verify</span>
+                    <i class="fas fa-spinner icon-spin hidden" id="loadingIcon"></i>
+                </button>
+                
+                <div class="timer" id="timer">Code expires in: 10:00</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeInputs = document.querySelectorAll('.code-digit');
+            const verifyButton = document.getElementById('verifyButton');
+            const usernameInput = document.getElementById('usernameInput');
+            const statusMessage = document.getElementById('statusMessage');
+            const buttonText = document.getElementById('buttonText');
+            const loadingIcon = document.getElementById('loadingIcon');
+            const timerElement = document.getElementById('timer');
+            
+            // Pré-remplir le nom d'utilisateur s'il est dans le localStorage
+            const savedUsername = localStorage.getItem('2fa_username');
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                // Focus sur le premier champ de code
+                codeInputs[0].focus();
+            }
+            
+            let timeLeft = 10 * 60; // 10 minutes en secondes
+            
+            // Fonction pour mettre à jour le timer
+            const updateTimer = () => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerElement.textContent = `Code expires in: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerElement.textContent = 'Code expired';
+                    timerElement.style.color = 'var(--danger-color)';
+                    verifyButton.disabled = true;
+                    showStatus('Your verification code has expired. Please login again to receive a new code.', 'error');
+                } else {
+                    timeLeft--;
+                }
+            };
+            
+            // Démarrer le timer
+            const timerInterval = setInterval(updateTimer, 1000);
+            updateTimer(); // Exécuter immédiatement pour éviter un délai d'une seconde
+            
+            // Auto-focus et passage au champ suivant
+            codeInputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    if (this.value.length === 1) {
+                        if (index < codeInputs.length - 1) {
+                            codeInputs[index + 1].focus();
+                        } else {
+                            // Si nous avons rempli le dernier champ, focus sur le nom d'utilisateur
+                            usernameInput.focus();
+                        }
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    // Gestion de la touche retour arrière pour revenir au champ précédent
+                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                });
+            });
+            
+            // Afficher un message de statut
+            function showStatus(message, type) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message';
+                statusMessage.classList.add(type);
+                statusMessage.style.display = 'block';
+            }
+            
+            // Gestion de la vérification
+            verifyButton.addEventListener('click', async function() {
+                const username = usernameInput.value.trim();
+                const code = Array.from(codeInputs).map(input => input.value).join('');
+                
+                if (username === '') {
+                    showStatus('Please enter your username', 'error');
+                    usernameInput.focus();
+                    return;
+                }
+                
+                if (code.length !== 6 || !/^\d{6}$/.test(code)) {
+                    showStatus('Please enter a valid 6-digit code', 'error');
+                    codeInputs[0].focus();
+                    return;
+                }
+                
+                // Afficher l'état de chargement
+                verifyButton.disabled = true;
+                buttonText.classList.add('hidden');
+                loadingIcon.classList.remove('hidden');
+                
+                try {
+                    console.log('Sending verification code:', code, 'for user:', username);
+                    
+                    // Envoyer la demande au CDN principal, pas au serveur d'A2F
+                    const response = await fetch('/verify-2fa', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            code: code
+                        })
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || data.message || 'Verification failed');
+                    }
+                    
+                    showStatus('Verification successful! Redirecting...', 'success');
+                    
+                    // Effacer l'intervalle pour éviter les fuites de mémoire
+                    clearInterval(timerInterval);
+                    
+                    // Supprimer le nom d'utilisateur du localStorage
+                    localStorage.removeItem('2fa_username');
+                    
+                    // Rediriger vers la page principale après une vérification réussie (généralement avec un court délai)
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                    
+                } catch (error) {
+                    showStatus(error.message || 'Verification failed. Please try again.', 'error');
+                    // Réinitialiser l'état du bouton
+                    verifyButton.disabled = false;
+                    buttonText.classList.remove('hidden');
+                    loadingIcon.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

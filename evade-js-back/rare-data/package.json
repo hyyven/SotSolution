@@ -1,0 +1,15 @@
+{
+  "name": "rare-data-server",
+  "version": "1.0.0",
+  "description": "Lightweight server for storing and serving rare data",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "fs-extra": "^11.2.0",
+    "crypto": "^1.0.1",
+    "mariadb": "^3.2.2"
+  }
+} 

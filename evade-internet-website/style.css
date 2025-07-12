@@ -1,0 +1,617 @@
+:root {
+    --primary-color: #0077FF; /* Bright Blue */
+    --secondary-color: #0055CC; /* Darker Blue */
+    --accent-color: #00F0FF; /* Neon Cyan - Kept */
+    --background-color: #0A192F; /* Dark Navy Blue */
+    --text-color: #EAEAEA;
+    --card-bg: #172A46; /* Slightly Lighter Navy */
+    --border-color: rgba(0, 119, 255, 0.3); /* Transparent Primary Blue */
+    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    --hover-gradient: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    --light-grey: #B0B0C0; /* Added variable for consistency */
+    --darker-navy: #051021; /* Added variable */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+h1, h2, h3 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color); /* Ensure headings are bright */
+}
+
+h1 { font-size: 2.8rem; line-height: 1.2; }
+h2 { font-size: 2.2rem; text-align: center; margin-bottom: 1rem; /* Reduced margin */ }
+h3 { font-size: 1.5rem; }
+
+p {
+    margin-bottom: 1rem;
+    color: var(--light-grey); /* Use variable */
+}
+
+/* Added general subtitle style */
+.section-subtitle {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem auto; /* Center and add bottom margin */
+    color: var(--light-grey);
+    font-size: 1.1rem;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+section {
+    padding: 6rem 5%;
+}
+
+.highlight {
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+/* Header & Nav */
+header {
+    background: rgba(10, 25, 47, 0.8); /* Match new bg color */
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 5%; /* Adjusted padding for logo */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px; /* Ensure consistent height */
+}
+
+.logo {
+    display: flex; /* Align image vertically */
+    align-items: center;
+}
+
+/* Style for the image logo */
+.logo img {
+    height: 45px; /* Adjust height as needed */
+    width: auto;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+nav ul li {
+    margin-left: 1.5rem; /* Slightly reduced margin */
+}
+
+nav ul li a {
+    font-weight: 400;
+    transition: color 0.3s ease;
+    color: var(--text-color);
+    font-size: 0.95rem; /* Slightly smaller */
+}
+nav ul li a:hover {
+    color: var(--accent-color);
+}
+
+/* Style for Discord link in nav */
+.discord-link {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent-color);
+    border-radius: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.discord-link:hover {
+    background-color: var(--accent-color);
+    color: var(--background-color);
+}
+
+/* Mobile Menu Styles */
+.mobile-menu-toggle {
+    display: none; /* Hidden by default */
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 1100; /* Above nav */
+}
+
+.mobile-menu {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(10, 25, 47, 0.95); /* Dark background */
+    backdrop-filter: blur(10px);
+    z-index: 1050; /* Below toggle, above content */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+}
+
+.mobile-menu ul li {
+    margin: 1.5rem 0;
+}
+
+.mobile-menu ul li a {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.mobile-menu ul li a:hover {
+    color: var(--accent-color);
+}
+.mobile-menu .mobile-cta {
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+}
+
+/* Buttons */
+.cta-button {
+    background: var(--gradient);
+    color: white !important; /* Ensure text is white */
+    border: none;
+    padding: 0.8rem 1.8rem;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+    text-align: center;
+    display: inline-block; /* Ensure it behaves like a block for sizing but flows inline */
+    text-decoration: none; /* Remove underline if it's an <a> tag */
+}
+
+.cta-button:hover {
+    background: var(--hover-gradient);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 119, 255, 0.4); /* Updated shadow color */
+    color: white !important;
+}
+
+.nav-cta {
+     padding: 0.6rem 1.2rem;
+     font-size: 0.9rem;
+     margin-left: 1rem; /* Add space next to Discord link */
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100vh; /* Full viewport height */
+    padding-top: 80px; /* Account for fixed header */
+    padding-left: 5%;
+    padding-right: 5%;
+    background: linear-gradient(rgba(10, 25, 47, 0.9), rgba(10, 25, 47, 1)), radial-gradient(circle at top right, rgba(0, 85, 204, 0.3) 0%, transparent 50%); /* Updated subtle gradient bg color */
+    position: relative;
+    overflow: hidden; /* Contain pseudo-elements */
+}
+
+.hero-content {
+    flex-basis: 55%;
+    animation: fadeInSlideUp 1s ease-out forwards;
+    z-index: 1; /* Ensure content is above any potential bg elements */
+}
+
+.hero-content h1 {
+    margin-bottom: 1.5rem;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    max-width: 600px; /* Constrain text width */
+}
+
+.hero-cta {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 1rem; /* Add space below button */
+}
+
+.small-text {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.hero-graphic {
+    flex-basis: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: float 4s ease-in-out infinite, fadeIn 1.5s ease-out forwards;
+    opacity: 0; /* Start hidden for fade-in */
+    animation-delay: 0.5s; /* Delay fade-in */
+    z-index: 0; /* Behind content */
+}
+
+.hero-graphic svg {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0px 10px 30px rgba(0, 119, 255, 0.4)); /* Updated drop shadow color */
+}
+
+/* Features Section */
+.features {
+    background-color: rgba(23, 42, 70, 0.5); /* Slightly different bg, related to card bg */
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Increased min width slightly */
+    gap: 2.5rem;
+}
+
+.feature-item {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 119, 255, 0.3); /* Updated shadow color */
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+    background: var(--gradient);
+    padding: 0.5rem;
+    border-radius: 50%;
+    line-height: 1;
+}
+
+/* How It Works Section */
+.how-it-works {
+    background: var(--background-color); /* Back to main bg */
+}
+.steps-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start; /* Align items at the top */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 1rem; /* Reduced gap slightly */
+}
+
+.step {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    text-align: center;
+    flex: 1; /* Allow steps to grow */
+    min-width: 200px; /* Minimum width */
+    max-width: 260px; /* Slightly increased maximum width */
+    margin-bottom: 1rem; /* Space for wrapped items */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 200px; /* Give steps some minimum height */
+}
+
+.step-number {
+    background: var(--gradient);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.step h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
+}
+
+.step p {
+    font-size: 0.9rem;
+    color: var(--light-grey); /* Use variable */
+    flex-grow: 1; /* Allow text to fill space */
+}
+
+.step-arrow {
+    font-size: 2rem;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center; /* Vertically center arrow */
+    align-self: center; /* Ensure it centers even with flex-start */
+    margin: 0 1rem; /* Spacing around arrows */
+    padding-top: 50px; /* Adjust alignment relative to boxes */
+}
+
+/* Hide arrows on wrap */
+@media (max-width: 1100px) {
+    .step-arrow {
+        display: none;
+    }
+    .steps-container {
+        flex-direction: column; /* Stack vertically */
+        align-items: center; /* Center items */
+    }
+     .step {
+        width: 80%; /* Take more width */
+        max-width: 400px;
+    }
+}
+
+/* Pricing Section */
+.pricing {
+     background-color: rgba(23, 42, 70, 0.5); /* Match features bg */
+}
+
+.pricing > p { /* Target the subtitle */
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+    color: var(--light-grey);
+}
+
+/* Container for the single plan */
+.single-plan-container {
+    display: flex;
+    justify-content: center; /* Center the single plan */
+    align-items: center;
+}
+
+.plan {
+    background: var(--card-bg);
+    padding: 2.5rem 2rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push button to bottom */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 100%; /* Allow width control */
+    max-width: 400px; /* Max width for the single plan */
+    min-height: 450px; /* Ensure a decent height */
+}
+
+.plan.featured {
+    border: 2px solid var(--accent-color);
+    /* Keep scale for emphasis even if it's the only one */
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3); /* Cyan shadow matches accent */
+}
+
+.plan h3 {
+    text-align: center;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.price .freq {
+    font-size: 1rem;
+    font-weight: 300;
+    color: #B0B0C0; /* Reset color */
+}
+
+.plan ul {
+    list-style: none;
+    margin-bottom: 2rem;
+    flex-grow: 1; /* Allow list to take available space */
+    padding-left: 0; /* Reset padding if list-style is none */
+}
+
+.plan ul li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+    color: #B0B0C0;
+    text-align: left; /* Align list items left */
+}
+
+.plan ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.plan-cta {
+    width: 100%;
+    margin-top: auto; /* Stick to bottom */
+}
+
+/* About Us Section */
+.about-us {
+    background-color: var(--background-color);
+}
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: left; /* Align text left for readability */
+}
+.about-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+    color: var(--light-grey);
+}
+
+/* FAQ Section */
+.faq {
+    background-color: rgba(23, 42, 70, 0.5); /* Match features bg */
+}
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.faq-item {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+/* Footer */
+footer {
+    background: var(--darker-navy); /* Even darker navy */
+    padding: 2rem 5%;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    margin-top: 4rem; /* Add space before footer */
+}
+
+footer p {
+    font-size: 0.9rem;
+    color: #8892b0; /* Lighter grey for better contrast on navy */
+    margin-bottom: 0.5rem;
+}
+/* Ensure footer link styling is subtle */
+footer p a {
+    color: var(--accent-color);
+    opacity: 0.8;
+}
+footer p a:hover {
+    opacity: 1;
+    color: var(--primary-color);
+}
+footer .disclaimer {
+    font-size: 0.8rem;
+    color: #6a7b9c; /* Lighter grey for disclaimer */
+    margin-top: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) { /* Adjusted breakpoint for nav */
+    nav ul {
+        /* Hide full nav items on smaller screens */
+        display: none;
+        /* Consider adding a hamburger menu toggle here in a future iteration */
+    }
+    .logo img {
+        height: 40px; /* Slightly smaller logo */
+    }
+     header {
+        padding: 0.5rem 3%;
+    }
+     .nav-cta {
+        display: none; /* Hide Get Started button next to hidden nav */
+    }
+     /* Add mobile menu button styles here if implementing one */
+}
+
+@media (max-width: 768px) {
+    h1 { font-size: 2.2rem; }
+    h2 { font-size: 1.8rem; }
+
+    /* Keep nav hidden as per previous breakpoint */
+
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        min-height: auto; /* Adjust height */
+        padding: 8rem 5% 4rem 5%; /* Adjust padding */
+    }
+
+    .hero-content {
+        flex-basis: auto; /* Reset basis */
+        margin-bottom: 3rem;
+    }
+
+     .hero-graphic {
+        flex-basis: auto; /* Reset basis */
+        width: 70%; /* Control size */
+        margin-top: 2rem;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr; /* Stack features */
+    }
+
+    /* Single plan already centered, adjust max-width if needed */
+    .plan {
+        max-width: 90%; /* Allow plan to be wider on mobile */
+        min-height: auto; /* Remove fixed min-height */
+        padding: 2rem 1.5rem;
+    }
+     .plan.featured {
+        transform: scale(1); /* Disable scale on mobile */
+     }
+}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evade Loader - Download</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, #000428, #004e92);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .download-container {
+            background: rgba(13, 20, 37, 0.9);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-size: 2.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        p {
+            color: #3498db;
+            margin-bottom: 2rem;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-button:hover {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .download-button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .download-button {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <h1>Evade Loader</h1>
+        <p>SECURE DOWNLOAD READY</p>
+        <button id="downloadButton" class="download-button">Download</button>
+        <div id="error" class="error"></div>
+    </div>
+
+    <!-- Script pour redirection A2F -->
+    <script>
+        // Script pour la redirection A2F
+        (function() {
+            // Sauvegarde de la référence fetch d'origine
+            const originalFetch = window.fetch;
+            
+            // Remplacer fetch par notre version modifiée
+            window.fetch = async function(url, options) {
+                // Appeler le fetch d'origine
+                const response = await originalFetch(url, options);
+                
+                // Cloner la réponse pour pouvoir la lire tout en la renvoyant intacte
+                const clonedResponse = response.clone();
+                
+                try {
+                    // Si c'est un appel au login ou une requête GET pour télécharger
+                    if ((url.includes('/login') || url.includes('/download')) && response.status === 403) {
+                        const data = await clonedResponse.json();
+                        
+                        // Si la réponse indique qu'une vérification 2FA est nécessaire
+                        if (data.requiresVerification === true) {
+                            console.log('2FA required, redirecting...');
+                            
+                            // Extraire le token JWT qui contient l'utilisateur
+                            let token = '';
+                            if (options && options.headers && options.headers.Authorization) {
+                                token = options.headers.Authorization.split(' ')[1];
+                            }
+                            
+                            // Si on a un token, on peut décoder l'utilisateur pour le pré-remplir
+                            if (token) {
+                                try {
+                                    // Extraction simple du nom d'utilisateur depuis le token JWT
+                                    const base64Url = token.split('.')[1];
+                                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                                    }).join(''));
+
+                                    const payload = JSON.parse(jsonPayload);
+                                    if (payload.username) {
+                                        localStorage.setItem('2fa_username', payload.username);
+                                    }
+                                } catch (e) {
+                                    console.error('Error decoding JWT token:', e);
+                                }
+                            }
+                            
+                            // Rediriger vers la page 2FA (sur le CDN principal)
+                            window.location.href = '/2fa';
+                            
+                            // Créer une nouvelle réponse pour pouvoir continuer l'exécution
+                            return new Response(JSON.stringify({
+                                redirecting: true,
+                                message: 'Redirecting to 2FA verification page'
+                            }), {
+                                status: 302,
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error in fetch interception:', e);
+                }
+                
+                // Retourner la réponse originale si aucune redirection n'est nécessaire
+                return response;
+            };
+        })();
+    </script>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        document.getElementById('downloadButton').addEventListener('click', async () => {
+            const errorDiv = document.getElementById('error');
+            const downloadButton = document.getElementById('downloadButton');
+            
+            try {
+                downloadButton.textContent = 'Downloading...';
+                downloadButton.style.animation = 'none';
+                
+                const response = await fetch('/download/loader', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'EvadeLoader.exe';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    downloadButton.textContent = 'Download Complete';
+                    setTimeout(() => {
+                        downloadButton.textContent = 'Download';
+                        downloadButton.style.animation = 'pulse 2s infinite';
+                    }, 2000);
+                } else {
+                    const data = await response.json();
+                    errorDiv.style.display = 'block';
+                    errorDiv.textContent = data.error || 'Download Failed';
+                    downloadButton.textContent = 'Download';
+                    downloadButton.style.animation = 'pulse 2s infinite';
+                }
+            } catch (error) {
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = 'Connection Failed';
+                downloadButton.textContent = 'Download';
+                downloadButton.style.animation = 'pulse 2s infinite';
+            }
+        });
+    </script>
+</body>
+</html> 
